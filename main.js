@@ -25,13 +25,6 @@
         if(!msg.startsWith("!"))return
         if(msg.startsWith("!say")) return sendMsg(msg.slice(4))
     };
-    //chat.addEventListener("DOMSubtreeModified",function(e){
-      //  let new_chat = chat.innerHTML;
-        //if(new_chat.length != current_chat.length){
-          //  let msg = new_chat.slice(current_chat.length);
-            //newMsg(msg); current_chat = new_chat;
-        //}}
-    //);
     document.addEventListener('keydown',function(e){
         if(e.code === "Enter"){
         textbar.value
