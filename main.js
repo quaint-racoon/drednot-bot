@@ -22,8 +22,8 @@
         send.click();
     }
     function newMsg(msg){
-        if(!msg.data.startsWith("!"))return
-        if(msg.data.startsWith("!say")) return sendMsg(msg.data.slice(4))
+        if(!msg.startsWith("!"))return
+        if(msg.startsWith("!say")) return sendMsg(msg.slice(4))
     };
     //chat.addEventListener("DOMSubtreeModified",function(e){
       //  let new_chat = chat.innerHTML;
