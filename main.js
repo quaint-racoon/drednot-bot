@@ -35,7 +35,15 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         const params = {
             "username":"drednot bot feed" ,
             "avatar_url":avatarUrl ,
-            "content" : msg };
+            "content": null,
+  "embeds": [
+    {
+      "title": `{${shipid}}`,
+      "description": msg,
+      "color": 8459284,
+
+    }],
+  };
         request.send(JSON.stringify(params));
     }
     function sendMsg(text){
@@ -45,7 +53,7 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         miniusers.forEach((mini)=>{
         let script = mini.document.createElement('script');
         script.innerHTML = `sendMsg('${text}')`
-        mini.document.body.appendChild(script)
+        mini.document.body.append(script)
         })
         }
     function joinmini(i){
@@ -109,7 +117,16 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     else logoutbtn.click()
     }
     function roles(msg){
-        teamAct('toggle_ui');teamAct('toggle_ui');
+        teamAct('toggle_ui');
+        let btns = Array.from(document.getElementsByTagName("button"))
+
+            btns.filter(b=>b.innerText==="Crew Control & Log")[0].click()
+            btns.filter(b=>b.innerText==="↻ Refresh List + Clear Filters")[0].click()
+
+        setTimeout(()=>{
+
+            teamAct('toggle_ui');
+
     let args = msg.split(" ")
     if(args.length<3) return sendMsg("there needs to be 2 arguements")
     let role = args[1]
@@ -120,16 +137,30 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     if(role==="guest")val = 0
 
         let roleselec = Array.from(document.getElementsByTagName("select")).filter(selector=>Array.from(selector.options)[0].innerText.startsWith("Captain"))
+        let totalroles = roleselec.length
+        let done = 0
+        let bar = document.createElement("div")
+        bar.style.backgroundColor = "grey"
+        bar.innerHTML = `<div id="countbar" style="position:absolute;"></div><div id="percbar" style="background-color:blue;height:30px;"></div>`
+        bar.style=`background-color: grey;width: 300px;position: absolute;left: 50%;top: 100px;height: 30px;transform: translate(-50%, -50%);display: flex;align-items: center;justify-content: center;`
+        document.body.append(bar)
+        let percbar = document.getElementById("percbar")
+        let countbar = document.getElementById("countbar")
+
+        percbar.style.width = 0
         roleselec.forEach((selec)=>{
             i++;
             setTimeout(()=>{
             selec.value=val
             const event = new Event('change')
             selec.dispatchEvent(event)
+            done+=1
+            percbar.style.width =`${done/totalroles*300}px`
+            countbar.innerText = `${done}/${totalroles}`
+            if(done/totalroles == 1) {bar.remove()}
             },i*100)
         })
-
-
+},300)
     }
     let antikickId;
     function toggleAntikick(msg){
