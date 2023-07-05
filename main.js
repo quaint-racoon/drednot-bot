@@ -10,14 +10,41 @@
     var miniusers = [];
     let motdflipactive = false;
     let motdIntervId;
+    let userMenu = document.createElement("div")
+    userMenu.classList="dark"
+    userMenu.style="padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
+    userMenu.innerHTML='<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><span style=" font-size: 14px; ">afk:</span> <input type="checkbox" id="EPICantiafk" style="width:20px;height:20px;"><span style="font-size: 14px;"> message : </span><input type="text" id="antiAfktext" value="antiafk bot created by quaint_racoon" style="font-size:14px;width:100px;maxlength:250px">'
     window.addEventListener('load',()=>{
+        document.body.append(userMenu)
         userName= Array.from(document.getElementsByClassName("user"))[0].innerText;
         document.getElementById("disconnect-popup").innerHTML = `<div><h2>DISCONNECTED</h2>You were kicked from this ship. You might still be able to rejoin.<p><button class="btn-green">Return to Menu</button></p></div>`
-    })
     let chat = document.getElementById("chat-content");
     let current_chat = chat.innerHTML;
     let textbar = document.getElementById("chat-input");
     let send = document.getElementById("chat-send");
+        let antiAfk= document.getElementById("EPICantiafk")
+        
+        addEventListener("keydown",function(event){
+            let key = event.code
+            let target = event.target
+            if(target != document.body)return
+            switch(key){
+                case "KeyE":
+                    userMenu.style.display = userMenu.style.display === 'none' ? '' : 'none';
+            }
+        })
+        
+        let antiAfkId
+        antiAfk.addEventListener("change",function(){
+            if(!antiAfk.checked)return clearInterval(antiAfkId)
+            let msg = document.getElementById("antiAfktext").value
+            antiAfkId = setInterval(function(){
+                sendMsg(msg)
+            },10000)
+            
+        })
+        
+        
     function sendDiscord(msg){
     const request = new XMLHttpRequest();
 request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXtQwbj8bYbXuRuKK0NBfaf2vNMUb3nJkkvY7SFHJopVLNFKNO7O-1LkGDZa5DQtxu");
@@ -40,7 +67,7 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     function sendMsg(text){
         send.click();
         textbar.value=text;
-        setTimeout(()=>{send.click()},1000)
+        setTimeout(()=>{send.click()},500)
         miniusers.forEach((mini)=>{
         let script = mini.document.createElement('script');
         script.innerHTML = `sendMsg('${text}')`
@@ -50,7 +77,7 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     function joinmini(i){
     let mini = open(window.location.href,'miniguy '+i)
         let script = mini.document.createElement('script');
-        script.innerHTML = `let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},1000)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
+        script.innerHTML = `let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},500)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
         mini.addEventListener('load',function(){mini.document.body.appendChild(script)});
         miniusers.push(mini);
     }
@@ -89,7 +116,7 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     if(miniuser===true)return
     let mini = open(window.location.href,'miniguy '+Date.now())
         var script = mini.document.createElement('script');
-        script.innerHTML = `miniuser=true;let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click();window.close();},1000)};let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click();sendMsg('the almighty ${userName} has joined your ship!')}});`
+        script.innerHTML = `miniuser=true;let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click();window.close();},500)};let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click();sendMsg('the almighty ${userName} has joined your ship!')}});`
         mini.addEventListener('load', function() {mini.document.body.appendChild(script)});
     }
     function changeAccounts(){
@@ -107,25 +134,16 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     }
     else logoutbtn.click()
     }
-    function roles(msg){
+    document.getElementById("promote").addEventListener("click",function(){
         teamAct('toggle_ui');
         let btns = Array.from(document.getElementsByTagName("button"))
 
             btns.filter(b=>b.innerText==="Crew Control & Log")[0].click()
             btns.filter(b=>b.innerText==="↻ Refresh List + Clear Filters")[0].click()
-
+        let val = document.getElementById("promoteVal").value
         setTimeout(()=>{
 
             teamAct('toggle_ui');
-
-    let args = msg.split(" ")
-    if(args.length<3) return sendMsg("there needs to be 2 arguements")
-    let role = args[1]
-    let val;
-    let i = 0;
-    if(role==="cap")val = 3
-    if(role==="crew")val = 1
-    if(role==="guest")val = 0
 
         let roleselec = Array.from(document.getElementsByTagName("select")).filter(selector=>Array.from(selector.options)[0].innerText.startsWith("Captain"))
         let totalroles = roleselec.length
@@ -137,7 +155,7 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         document.body.append(bar)
         let percbar = document.getElementById("percbar")
         let countbar = document.getElementById("countbar")
-
+        let i = 0;
         percbar.style.width = 0
         roleselec.forEach((selec)=>{
             i++;
@@ -151,8 +169,8 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
             if(done/totalroles == 1) {bar.remove()}
             },i*100)
         })
-},300)
-    }
+},1000)
+    })
     let antikickId;
     function toggleAntikick(msg){
         let args = msg.split(" ")
@@ -196,7 +214,6 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         if(msg.startsWith("!discord")) return discordthingy(msg);
         if(msg.startsWith("!bot")) return controlMini(msg);
         if(msg.startsWith("!account"))return changeAccounts();
-        if(msg.startsWith("!roles"))return roles(msg);
         if(msg.startsWith("!antikick"))return toggleAntikick(msg);
         if(msg.startsWith("!motd")) return motd(msg.slice(6))
 
@@ -256,5 +273,6 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
     template.innerHTML = html;
     return template.content
 }
+})
 
 })();
