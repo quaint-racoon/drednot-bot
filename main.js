@@ -14,8 +14,18 @@
     userMenu.classList="dark"
     userMenu.style="padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
     userMenu.innerHTML='<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><span style=" font-size: 14px; ">afk:</span> <input type="checkbox" id="EPICantiafk" style="width:20px;height:20px;"><span style="font-size: 14px;"> message : </span><input type="text" id="antiAfktext" value="antiafk bot created by quaint_racoon" style="font-size:14px;width:100px;maxlength:250px">'
+    
+    let userMenuBtn = document.createElement("button")
+    userMenuBtn.classList = "btn-blue btn-small"
+    userMenuBtn.innerText = "Epic menu"
+    userMenuBtn.addEventListener("click",function(){
+        userMenu.style.display = userMenu.style.display === 'none' ? '' : 'none';
+    })
+    
+    
     window.addEventListener('load',()=>{
         document.body.append(userMenu)
+        document.getElementById("content-bottom").firstChild.childNodes[7].insertBefore(userMenuBtn)
         userName= Array.from(document.getElementsByClassName("user"))[0].innerText;
         document.getElementById("disconnect-popup").innerHTML = `<div><h2>DISCONNECTED</h2>You were kicked from this ship. You might still be able to rejoin.<p><button class="btn-green">Return to Menu</button></p></div>`
     let chat = document.getElementById("chat-content");
