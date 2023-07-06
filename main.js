@@ -9,6 +9,7 @@
     var miniuser = false;
     var miniusers = [];
     let userMenu = document.createElement("div")
+    let linkstarters = ["https://","http://","youtube","www.","media.discordapp.net/attachments"]
     userMenu.id = "userMenu"
     userMenu.classList="darker"
     userMenu.style="padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
@@ -56,19 +57,22 @@
         
         async function playerscounter(){
             let allplayers = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children)
-            let banned=0,cap=0,crew=0,guest=0;
+            let banned=0;
+            let cap=0;
+            let crew=0;
+            let guest=0;
             allplayers.forEach((player)=>{
-                player = player.firstChild
-                if(player.innerText.toLowerCase.startsWith=="banned")return banned+=1
-                if(player.innerText.toLowerCase.startsWith=="captain")return cap+=1
+                player = player.lastChild.firstChild
+                if(player.innerText.toLowerCase().startsWith("banned"))return banned+=1
+                if(player.innerText.toLowerCase().startsWith("captain")&&player.nodeName!="SELECT")return cap+=1
                 switch(player.value){
-                        case 3:
+                    case "3":
                         cap+=1;
                         break;
-                        case 1:
+                    case "1":
                         crew+=1;
                         break;
-                        case 0:
+                    case "0":
                         guest+=1;
                         break;
                 }
@@ -76,13 +80,16 @@
             return {banned,cap,crew,guest}
         }
         
-        document.getElementById("team_menu").addEventListener("DOMNodeInserted",async ()=>{
+        document.getElementById("team_manager_button").addEventListener("click",async ()=>{ 
+            setTimeout(async ()=>{
+                if(document.getElementById("team_menu").style.display=="none")return;
         document.getElementById("team_players_inner").parentElement.insertBefore(shipPlayersMenu,document.getElementById("team_players_inner"))
         document.getElementById("team_players_inner").style.top="100px"
             let players = await playerscounter()
-            shipPlayersMenu.innerHTML = `<span class="rolePanel">Captain: ${players.cap}</span> <span class="rolePanel">Crew: ${players.crew}</span> <span class="rolePanel">Guest: ${players.guest}</span> <span class="rolePanel">Banned: ${players.banned}</span>`
+            shipPlayersMenu.innerHTML = `<span>Captain: ${players.cap}</span> <span>Crew: ${players.crew}</span> <span>Guest: ${players.guest}</span> <span>Banned: ${players.banned}</span>`
             
-        }, {once : true})
+            },500)
+        })
         
         addEventListener("keydown",function(event){
             let key = event.code
@@ -266,11 +273,12 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         }
     //shipjointhingy();
     setTimeout(()=>{
+        
         if(msg.childNodes.length>1){
-        let text = msg.childNodes[1]
-        if(text.nodeName==="A"){
-        let link = text.href
-        if(link.startsWith("https://media.discordapp.net/attachments/")){
+        let words = msg.innerText.split(" ")
+        if(!linkstarters.some(r=> words.indexOf(r) >= 0))return console.log("no link found",words)
+        let link = words.filter(r=>linkstarters)
+        if(link.startsWith("https://media.discordapp.net/attachments/"||"media.discordapp.net/attachments")){
             let img = document.createElement("img")
         img.src = link
             img.style.display = "block"
@@ -292,10 +300,10 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
                     div.style.display = "flex"
                     div.innerHTML = `<img src="${image.content}" width="150px" height="150px" style="padding:3px;"><div style="display:flex;flex-direction: column;align-items: center;justify-content: space-evenly;font-size:18px;"><strong>${title.content.slice(0, -13)}</strong><div style="display:flex;justify-content: center;align-items: center;width:100%;"><span>open in:</span><a href="${link}" target="_blank"><button style="margin:5px;" class="btn-small btn-orange">new tab</button></a><a href="${link}"><button class="btn-red btn-small">this tab</button></a></div></div>`
                     msg.appendChild(div)
-
+//<iframe src="${src}" style=" aspect-ratio: 16/9; height: 150px; "></iframe>
                 })
             }
-        }
+        
         }
     },500)
                 })
