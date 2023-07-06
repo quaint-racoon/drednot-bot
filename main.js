@@ -8,12 +8,11 @@
     var userName;
     var miniuser = false;
     var miniusers = [];
-    let motdflipactive = false;
-    let motdIntervId;
     let userMenu = document.createElement("div")
-    userMenu.classList="dark"
+    userMenu.id = "userMenu"
+    userMenu.classList="darker"
     userMenu.style="padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
-    userMenu.innerHTML='<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><span style=" font-size: 14px; ">afk:</span> <input type="checkbox" id="EPICantiafk" style="width:20px;height:20px;"><span style="font-size: 14px;"> message : </span><input type="text" id="antiAfktext" value="antiafk bot created by quaint_racoon" style="font-size:14px;width:100px;maxlength:250px">'
+    userMenu.innerHTML='<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px">'
     
     let userMenuBtn = document.createElement("button")
     userMenuBtn.classList = "btn-blue btn-small"
@@ -22,10 +21,13 @@
         userMenu.style.display = userMenu.style.display === 'none' ? '' : 'none';
     })
     
+    let shipPlayersMenu = document.createElement("div")
+    shipPlayersMenu.style = "width:100%;position:absolute;"
     
     window.addEventListener('load',()=>{
         document.body.append(userMenu)
-        document.getElementById("content-bottom").firstChild.childNodes[7].insertBefore(userMenuBtn)
+        let last_button = Array.from(document.getElementsByClassName("last-left"))[0]
+        last_button.parentElement.insertBefore(userMenuBtn,last_button)
         userName= Array.from(document.getElementsByClassName("user"))[0].innerText;
         document.getElementById("disconnect-popup").innerHTML = `<div><h2>DISCONNECTED</h2>You were kicked from this ship. You might still be able to rejoin.<p><button class="btn-green">Return to Menu</button></p></div>`
     let chat = document.getElementById("chat-content");
@@ -33,6 +35,54 @@
     let textbar = document.getElementById("chat-input");
     let send = document.getElementById("chat-send");
         let antiAfk= document.getElementById("EPICantiafk")
+        let antiAfkText = document.getElementById("EPICantiafkText")
+        let EPICmotd = document.getElementById("EPICmotd")
+        let EPICmotdText = document.getElementById("EPICmotdText")
+        let words = [
+            `!@#$%&\n${EPICmotdText.value}\n@#$%&!`,
+            `#$%&!@\n${EPICmotdText.value}\n$%&!@#`,
+            `%&!@#$\n${EPICmotdText.value}\n&!@#$%`,
+            `#^&%*!\n${EPICmotdText.value}\n@%&*$`
+        ];
+        
+        EPICmotdText.addEventListener("change",()=>{
+            words = [
+                `!@#$%&\n${EPICmotdText.value}\n@#$%&!`,
+                `#$%&!@\n${EPICmotdText.value}\n$%&!@#`,
+                `%&!@#$\n${EPICmotdText.value}\n&!@#$%`,
+                `#^&%*!\n${EPICmotdText.value}\n@%&*$`
+            ];
+        })
+        
+        async function playerscounter(){
+            let allplayers = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children)
+            let banned=0,cap=0,crew=0,guest=0;
+            allplayers.forEach((player)=>{
+                player = player.firstChild
+                if(player.innerText.toLowerCase.startsWith=="banned")return banned+=1
+                if(player.innerText.toLowerCase.startsWith=="captain")return cap+=1
+                switch(player.value){
+                        case 3:
+                        cap+=1;
+                        break;
+                        case 1:
+                        crew+=1;
+                        break;
+                        case 0:
+                        guest+=1;
+                        break;
+                }
+            })
+            return {banned,cap,crew,guest}
+        }
+        
+        document.getElementById("team_menu").addEventListener("DOMNodeInserted",async ()=>{
+        document.getElementById("team_players_inner").parentElement.insertBefore(shipPlayersMenu,document.getElementById("team_players_inner"))
+        document.getElementById("team_players_inner").style.top="100px"
+            let players = await playerscounter()
+            shipPlayersMenu.innerHTML = `<span class="rolePanel">Captain: ${players.cap}</span> <span class="rolePanel">Crew: ${players.crew}</span> <span class="rolePanel">Guest: ${players.guest}</span> <span class="rolePanel">Banned: ${players.banned}</span>`
+            
+        }, {once : true})
         
         addEventListener("keydown",function(event){
             let key = event.code
@@ -45,15 +95,13 @@
         })
         
         let antiAfkId
-        antiAfk.addEventListener("change",function(){
-            if(!antiAfk.checked)return clearInterval(antiAfkId)
-            let msg = document.getElementById("antiAfktext").value
+        antiAfk.addEventListener("click",function(){
+            if(!antiAfk.classList.toggle("btn-green"))return clearInterval(antiAfkId)
             antiAfkId = setInterval(function(){
-                sendMsg(msg)
+                sendMsg(antiAfkText.value)
             },10000)
             
         })
-        
         
     function sendDiscord(msg){
     const request = new XMLHttpRequest();
@@ -181,42 +229,18 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         })
 },1000)
     })
-    let antikickId;
-    function toggleAntikick(msg){
-        let args = msg.split(" ")
-        if(args[1]==="false")return clearInterval(antikickId)
-        if(args[1]==="true"){
-        antikickId = setInterval(()=>{
-            let error_ = document.getElementById("disconnect-popup")
-            let errormsg=error_.childNodes[0].childNodes[1].nodeValue
-            if(error_.style.display==="none")return//This ship is not available to join. It may have been saved.
-            let ship =Array.from(document.getElementsByClassName("sy-id")).filter(ship=>ship.innerText==="{"+shipid+"}")
-            if(errormsg==="You were banned from this ship. You can still join another ship or create your own.")return clearInterval(antikickId)
-            if(errormsg==="This ship is not available to join. It may have been saved.")return clearInterval(antikickId);
-            let returnbtn = error_.childNodes[0].childNodes[2]
-            returnbtn.click()
-            ship[0].click()
-        },1000)
-    }
-    }
-
-    function motd(val){
-
-        if(motdflipactive){
-        clearInterval(motdIntervId)
-        motdflipactive = false
-        }
-        if(!motdflipactive){
-        motdflipactive = true
-        let words = [`!@#$%&\n${val}\n@#$%&!`,`#$%&!@\n${val}\n$%&!@#`,`%&!@#$\n${val}\n&!@#$%`,`#^&%*!\n${val}\n@%&*$`];
-        motdIntervId=setInterval(function(){
+        let EPICmotdId;
+    EPICmotd.addEventListener("click",function(){
+        
+        if(!EPICmotd.classList.toggle("btn-green"))return clearInterval(EPICmotdId)
+        EPICmotdId=setInterval(function(){
             let word=Math.floor(Math.random()*words.length);
             editMotd();
             document.getElementById("motd-edit-text").value=words[word];
             saveMotd(true);}
             ,100)
-        }
-        }
+        
+        })
     function newMsg(msg){
         if(!msg.startsWith("!"))return
         if(msg.startsWith("!say")) return sendMsg(msg.slice(5))
@@ -224,8 +248,6 @@ request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXt
         if(msg.startsWith("!discord")) return discordthingy(msg);
         if(msg.startsWith("!bot")) return controlMini(msg);
         if(msg.startsWith("!account"))return changeAccounts();
-        if(msg.startsWith("!antikick"))return toggleAntikick(msg);
-        if(msg.startsWith("!motd")) return motd(msg.slice(6))
 
     };
     textbar.addEventListener('change',function(e){
