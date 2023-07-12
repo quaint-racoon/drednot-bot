@@ -1,0 +1,34 @@
+{
+    "name": "EPIC drednot",
+    "version": "1.0.0",
+    "description": "hotkey = e\nmakes drednot more EPIC\nisnt related to the clan 'epic'",
+    "manifest_version": 3,
+    "author": "quaint racoon",
+    "action":{
+        "default_popup": "popup/popup.html",
+        "default_title": "EPIC drednot"
+    },
+    "icons": {
+    "16": "icon16.jpg",
+    "32": "icon32.jpg",
+    "48": "icon48.jpg",
+    "128": "icon128.jpg"
+  },
+  "content_scripts": [
+        {
+            "matches": ["https://*.drednot.io/*"],
+            "js": ["main.js"],
+            "css": ["inject.css"]
+        }
+    ],
+  "host_permissions": ["https://*.drednot.io/*"],
+  "web_accessible_resources": [
+      {
+        "resources": [
+              "inject.js"
+            ],
+              
+        "matches": ["https://*.drednot.io/*"]
+      }
+  ]
+}
