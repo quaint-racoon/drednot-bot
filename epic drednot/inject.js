@@ -24,12 +24,39 @@
     quick_save.textContent = "quick Save";
     quick_save.classList='btn-small btn-red';
     quick_save.id = 'quick_save';
-    quick_save.onclick = function () { saveShip() }
+    quick_save.onclick = function(){ saveShip() }
     
     
 	let shipPlayersMenu = document.createElement("div")
 	shipPlayersMenu.style = "width:100%;position:absolute;"
 	shipPlayersMenu.id = "shipPlayersMenu"
+    
+    let loginsection = document.createElement("section")
+    loginsection.innerHTML = "<button id='discordloginbtn'>login</button><div id='avatar' style='display:none;'><h3>discord login</h3><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
+    class DB {
+        get(item){
+            return JSON.parse(localStorage.getItem(item));
+        }
+        set(item,value){
+            return localStorage.setItem(item, JSON.stringify(value));
+        }
+    }
+    const db = new DB();
+    
+    function accountdata(){
+        return {code:db.get("code"),username:(Array.from(document.getElementsByClassName("user"))[0].innerText)}
+    }
+    
+    function loginToDrednotsDB(){
+        fetch("https://drednots-database.quaint0racoon.repl.co/login", {
+  method: "POST", 
+  mode:"no-cors",
+  headers: {
+      "Content-Type": "application/json",
+    },
+  body: JSON.stringify(accountdata())
+}).then()
+    }
 	window.addEventListener('load', () =>
 	{
         let mapBtn = document.getElementById("map_button")
@@ -72,6 +99,10 @@
 				`#^&%*!\n${EPICmotdText.value}\n@%&*$`
 			];
 		})
+        
+        let sectionmenu = document.getElementById("shipyard").firstChild
+            sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
+        
 		async function playerscounter()
 		{
 			let allplayers = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children)
@@ -360,19 +391,18 @@
             
 					let words = msg.innerText.split(/(\r\n|\r|\n| )/g)
 					let links = words.filter(r => linkstarters.test(r))
-                    console.log(links)
 					if (links.length < 1) return;
-            msg.innerHTML = msg.innerHTML.replace(regexUrl, function(text,link){return`<div class="link-wrapper"><a href="//${link}" target="_blank">🔗${text}</a></div>`})
+            msg.innerHTML = msg.innerHTML.replace(regexUrl, function(text,link){return`<div class="link-wrapper"><a href="${text}" target="_blank">🔗${text}</a></div>`})
 					links.forEach((link) =>
 					{
 						
                         if (link.startsWith("https://media.discordapp.net/attachments/" || "media.discordapp.net/attachments"))
 						{
 							let div = document.createElement("div")
-							div.style = "display:flex;justify-content: center;"
+							div.classList = "embed"
 							div.innerHTML = `<image src="${link}" style="display:block;"></image>`
-							msg.appendChild(div)
-							chat.scrollY = chat.height
+							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
+                            chat.scrollY = chat.height
 						}
 						if (link.startsWith("https://drednot.io/invite/"))
 						{
@@ -385,18 +415,18 @@
 									let title = metas.filter(a => a.attributes[0].value === "og:title")[0]
 									let image = metas.filter(a => a.attributes[0].value === "og:image")[0]
 									let div = document.createElement("div")
-									div.style = "display:flex;justify-content: center;"
+                                    div.classList = "embed"
 									div.innerHTML = `<img src="${image.content}" width="150px" height="150px" style="padding:3px;"><div style="display:flex;flex-direction: column;align-items: center;justify-content: space-evenly;font-size:18px;"><strong>${title.content.slice(0, -13)}</strong><div style="display:flex;justify-content: center;align-items: center;width:100%;"><span>open in:</span><a href="${link}" target="_blank"><button style="margin:5px;" class="btn-small btn-orange">new tab</button></a><a href="${link}"><button class="btn-red btn-small">this tab</button></a></div></div>`
-									msg.appendChild(div)
+							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
 								})
 						}
 						if (/.*youtu\.*be(\.com)*\/watch\?v=/gim.test(link))
 						{
 							let div = document.createElement("div")
-                            div.classList="video"
-							div.style = "display:flex;justify-content: center;"
-							div.innerHTML = `<iframe src="${link.replace("watch?v=","embed/")}" style=" aspect-ratio: 16/9; height: 150px; " allowfullscreen></iframe>`
-							msg.appendChild(div)
+							div.classList = "embed video"
+                            div.innerHTML = `<iframe src="${link.replace("watch?v=","embed/")}" style=" aspect-ratio: 16/9; height: 150px; " allowfullscreen></iframe>`
+							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
+                            
 						}
 					})
                 }
