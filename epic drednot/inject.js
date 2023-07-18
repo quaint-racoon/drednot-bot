@@ -32,7 +32,7 @@
 	shipPlayersMenu.id = "shipPlayersMenu"
     
     let loginsection = document.createElement("section")
-    loginsection.innerHTML = "<button id='discordloginbtn'>login</button><div id='avatar' style='display:none;'><h3>discord login</h3><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
+    loginsection.innerHTML = "<h3>discord login</h3><div id='discordloginsection'><button id='discordloginbtn' class='btn-small btn-green'>login</button></div><div id='avatar' style='display:none;'><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
     class DB {
         get(item){
             return JSON.parse(localStorage.getItem(item));
@@ -44,18 +44,33 @@
     const db = new DB();
     
     function accountdata(){
-        return {code:db.get("code"),username:(Array.from(document.getElementsByClassName("user"))[0].innerText)}
+        return {usercode:db.get("code"),acc:(Array.from(document.getElementsByClassName("user"))[0].innerText)}
     }
     
     function loginToDrednotsDB(){
         fetch("https://drednots-database.quaint0racoon.repl.co/login", {
-  method: "POST", 
-  mode:"no-cors",
-  headers: {
-      "Content-Type": "application/json",
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json",
     },
   body: JSON.stringify(accountdata())
-}).then()
+}).then(async (data)=>{
+            return await data.json()
+        }).then((data)=>{
+            console.log(data)
+            if(data.error) alert(data.error)
+            if(data.verifycode){
+                let code = prompt(data.verifycode)
+                db.set("code",code)
+            }
+            if(data.user){
+                document.getElementById("discordloginsection").style.display = "none"
+                document.getElementById("avatar").style.display = "flex"
+                document.getElementById("avatarPFP").src=data.user.avatarURL
+                document.getElementById("avatarTAG").innerText=data.user.tag
+
+            }
+        })
     }
 	window.addEventListener('load', () =>
 	{
@@ -75,7 +90,6 @@
 		document.body.append(userMenu)
 		let last_button = Array.from(document.getElementsByClassName("last-left"))[0]
 		last_button.parentElement.insertBefore(userMenuBtn, last_button)
-		userName = Array.from(document.getElementsByClassName("user"))[0].innerText;
 		document.getElementById("disconnect-popup").innerHTML = `<div><h2>DISCONNECTED</h2>You were kicked from this ship. You might still be able to rejoin.<p><button class="btn-green">Return to Menu</button></p></div>`
 		let chat = document.getElementById("chat-content");
 		let textbar = document.getElementById("chat-input");
@@ -102,14 +116,18 @@
         
         let sectionmenu = document.getElementById("shipyard").firstChild
             sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
-        
+        document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
 		async function playerscounter()
 		{
+            let btns = Array.from(document.getElementsByTagName("button"))
+			let crewcontrol = btns.filter(b => b.innerText === "Crew Control & Log")[0]
+            if(!crewcontrol.classList.value.split(" ").includes("btn-green"))return
 			let allplayers = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children)
 			let banned = 0;
 			let cap = 0;
 			let crew = 0;
 			let guest = 0;
+            
 			allplayers.forEach((player) =>
 			{
 				player = player.lastChild.firstChild
@@ -294,13 +312,13 @@
 		document.getElementById("promote").addEventListener("click", function()
 		{
 			teamAct('toggle_ui');
+            teamAct('toggle_ui');
 			let btns = Array.from(document.getElementsByTagName("button"))
 			btns.filter(b => b.innerText === "Crew Control & Log")[0].click()
 			btns.filter(b => b.innerText === "↻ Refresh List + Clear Filters")[0].click()
 			let val = document.getElementById("promoteVal").value
 			setTimeout(() =>
 			{
-				teamAct('toggle_ui');
 				let roleselec = Array.from(document.getElementsByTagName("select")).filter(selector => Array.from(selector.options)[0].innerText.startsWith("Captain"))
 				let totalroles = roleselec.length
 				let done = 0
