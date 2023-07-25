@@ -32,7 +32,7 @@
 	shipPlayersMenu.id = "shipPlayersMenu"
     
     let loginsection = document.createElement("section")
-    loginsection.innerHTML = "<h3>discord login</h3><div id='discordloginsection'><button id='discordloginbtn' class='btn-small btn-green'>login</button><a href='https://discord.gg/qd9Ab8kHUN' target='_blank'>drednot's database<a></div><div id='avatar' style='display:none;'><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
+    loginsection.innerHTML = "<h3>discord login</h3><div id='discordloginsection'><button id='discordloginbtn' class='btn-small btn-green'>login</button><a href='https://discord.gg/qd9Ab8kHUN' target='_blank' style=" float: right; ">drednot's database<a></div><div id='avatar' style='display:none;'><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
     class DB {
         get(item){
             return JSON.parse(localStorage.getItem(item));
