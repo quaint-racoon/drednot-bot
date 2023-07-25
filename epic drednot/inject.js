@@ -223,17 +223,14 @@
 			})
 		}
 
-		function joinmini(i)
-		{
-			let mini = open(window.location.href, 'miniguy ' + i)
-			let script = mini.document.createElement('script');
-			script.innerHTML = `let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},500)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
-			mini.addEventListener('load', function()
-			{
-				mini.document.body.appendChild(script)
-			});
-			miniusers.push(mini);
-		}
+		function joinmini(i){
+    let mini = open(window.location.href,'miniguy '+i)
+        let script = mini.document.createElement('script');
+        let server = document.getElementById("shipyard").firstChild.children[1].children[1].value
+        script.innerHTML = `document.getElementById("shipyard").firstChild.children[1].children[1].value = ${server};let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},1000)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
+        mini.addEventListener('load',function(){mini.document.body.appendChild(script)});
+        miniusers.push(mini);
+    }
 
 		function controlMini(msg)
 		{
