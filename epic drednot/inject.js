@@ -13,12 +13,12 @@
 	const regexUrl = new RegExp(String.raw`(?<!@[^\s]*|<[^>]*)(?:https?:)?(?:(?:\/|&#x2F;)(?:\/|&#x2F;))?([\w.-]+[\w.-]\w\.(?!(?:${regexFileExtensions}|no)(?!\w))[a-zA-Z-_][\w\-_~:/?#[\]@!\$&'\(\)\*\+%,;=.]+)(?<!\.)`, "gi");
 	userMenu.id = "userMenu"
 	userMenu.classList = "darker"
-	userMenu.style = "padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
-	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px">'
+    userMenu.style="display:none;"
+	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <section class="usermenu-cap-section" id="capCommands"><h3>captain commands</h3><button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);float:right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(255, 255, 136); float: right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-normal-section" id="normalCommands"><h3>normal commands</h3><button class="btn-small" id="chat embeds">chat embeds</button><button class="btn-small" id="motd embeds">motd embeds</button></section>'
 	let userMenuBtn = document.createElement("button")
 	userMenuBtn.classList = "btn-blue btn-small"
 	userMenuBtn.innerText = "Epic menu"
-	userMenuBtn.addEventListener("click",()=>{userMenu.style.display = userMenu.style.display === 'none' ? '' : 'none';})
+	userMenuBtn.addEventListener("click",()=>{toggleUI(userMenu)})
     
     const quick_save = document.createElement('button');
     quick_save.textContent = "quick Save";
@@ -88,6 +88,7 @@
     }
 	window.addEventListener('load', () =>
 	{
+
         let mapBtn = document.getElementById("map_button")
         mapBtn.parentElement.insertBefore(quick_save, mapBtn);
         
@@ -101,9 +102,38 @@
             motdText.innerText=oldMotdText.innerText
 		}).observe(oldMotdText,{childList: true});
         
+        
+            
+            
+        
+        
+        const observer = new MutationObserver(mutations => {
+  if (mutations.some(mutation => {
+    return Array.from(mutation.addedNodes).some(node => node.id=="shipyard")
+  })) {
+    setTimeout(() => { 
+             let sectionmenu = document.getElementById("shipyard").firstChild
+            sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
+        document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
+    }, 0)
+    observer.disconnect()
+  }
+})
+
+observer.observe(document, {
+  attributes: false,
+  childList: true,
+  characterData: false,
+  subtree: true
+})
+        
+        
+        
+        
 		document.body.append(userMenu)
 		let last_button = Array.from(document.getElementsByClassName("last-left"))[0]
 		last_button.parentElement.insertBefore(userMenuBtn, last_button)
+            
 		document.getElementById("disconnect-popup").innerHTML = `<div><h2>DISCONNECTED</h2>You were kicked from this ship. You might still be able to rejoin.<p><button class="btn-green">Return to Menu</button></p></div>`
 		let chat = document.getElementById("chat-content");
 		let textbar = document.getElementById("chat-input");
@@ -112,6 +142,15 @@
 		let antiAfkText = document.getElementById("EPICantiafkText")
 		let EPICmotd = document.getElementById("EPICmotd")
 		let EPICmotdText = document.getElementById("EPICmotdText")
+        let chatembeds = document.getElementById("chat embeds")
+        let MOTDembeds = document.getElementById("motd embeds")
+        
+        let settings = db.get("settings")||{chatEmbeds:true,MotdEmbeds:true}
+        function changeSettings(key){
+            settings[key] = !settings[key]
+            db.set("settings",settings)
+        }
+        
 		let words = [
 			`!@#$%&\n${EPICmotdText.value}\n@#$%&!`,
 			`#$%&!@\n${EPICmotdText.value}\n$%&!@#`,
@@ -128,9 +167,7 @@
 			];
 		})
         
-        let sectionmenu = document.getElementById("shipyard").firstChild
-            sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
-        document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
+       
 		async function playerscounter()
 		{
             let btns = Array.from(document.getElementsByTagName("button"))
@@ -186,7 +223,7 @@
 			switch (key)
 			{
 				case "KeyE":
-					userMenu.style.display = userMenu.style.display === 'none' ? '' : 'none';
+					toggleUI(userMenu)
 			}
 		})
 		let antiAfkId
@@ -441,10 +478,8 @@
 				childList: true
 			});
 		});
-		motdTextObserver.observe(motdText,
-		{
-			childList: true,
-		});
+		
+        
 		const chatObserver = new MutationObserver((list) =>
 		{
 			let msg = chat.lastChild
@@ -507,13 +542,7 @@
                 }
         
         
-		chatObserver.observe(chat,
-		{
-			characterData: false,
-			attributes: false,
-			childList: true,
-			subtree: false
-		});
+		
 
 		function string2html(html)
 		{
@@ -522,5 +551,28 @@
 			template.innerHTML = html;
 			return template.content
 		}
+        
+        function startMotd(){
+            motdTextObserver.observe(motdText,{childList: true,});
+            MOTDembeds.classList.toggle("btn-green")
+        }
+        function startChat(){
+            chatObserver.observe(chat,{characterData: false,attributes: false,childList: true,subtree: false});
+            chatembeds.classList.toggle("btn-green")
+        }
+        
+        if(settings.chatEmbeds) startChat()
+        if(settings.MotdEmbeds) startMotd()
+        
+        MOTDembeds.onclick= ()=>{
+            changeSettings("MotdEmbeds")
+            MOTDembeds.classList.toggle("btn-green")
+            alert("reload to see changes")
+        }
+        chatembeds.onclick= ()=>{
+            changeSettings("chatEmbeds")
+            chatembeds.classList.toggle("btn-green")
+            alert("reload to see changes")
+        }
 	})
 })();
