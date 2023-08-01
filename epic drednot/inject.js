@@ -14,7 +14,8 @@
 	userMenu.id = "userMenu"
 	userMenu.classList = "darker"
 	userMenu.style = "padding: 10px; left: 20px; bottom: 100px; position: fixed; z-index: 100;display:none"
-	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px">'
+	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px">'
+	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(136, 255, 255);right: 10px;position: absolute;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px">'
 	let userMenuBtn = document.createElement("button")
 	userMenuBtn.classList = "btn-blue btn-small"
 	userMenuBtn.innerText = "Epic menu"
@@ -31,8 +32,19 @@
 	shipPlayersMenu.style = "width:100%;position:absolute;"
 	shipPlayersMenu.id = "shipPlayersMenu"
     
+    function saveShip(){
+        teamAct('toggle_ui');
+        teamAct('toggle_ui');
+        Array.from(document.getElementsByTagName("button")).filter(b => b.innerText === "Ship Settings")[0].click()
+        setTimeout(()=>{
+        Array.from(document.getElementsByTagName("button")).filter(b => b.innerText === "Save Ship")[0].click()
+        Array.from(document.getElementsByTagName("button")).filter(b => b.innerText === "Okay")[0].click()
+        },100)
+        
+    }
+    
     let loginsection = document.createElement("section")
-    loginsection.innerHTML = "<h3>discord login</h3><div id='discordloginsection'><button id='discordloginbtn' class='btn-small btn-green'>login</button><a href='https://discord.gg/qd9Ab8kHUN' target='_blank' style=' float: right; '>drednot's database<a></div><div id='avatar' style='display:none;'><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
+    loginsection.innerHTML = "<h3>discord login</h3><div id='discordloginsection'><button id='discordloginbtn' class='btn-small btn-green'>login</button></div><div id='avatar' style='display:none;'><img id='avatarPFP'><p id='avatarTAG'></p><div>"    
     class DB {
         get(item){
             return JSON.parse(localStorage.getItem(item));
@@ -223,14 +235,17 @@
 			})
 		}
 
-		function joinmini(i){
-    let mini = open(window.location.href,'miniguy '+i)
-        let script = mini.document.createElement('script');
-        let server = document.getElementById("shipyard").firstChild.children[1].children[1].value
-        script.innerHTML = `document.getElementById("shipyard").firstChild.children[1].children[1].value = ${server};let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},1000)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
-        mini.addEventListener('load',function(){mini.document.body.appendChild(script)});
-        miniusers.push(mini);
-    }
+		function joinmini(i)
+		{
+			let mini = open(window.location.href, 'miniguy ' + i)
+			let script = mini.document.createElement('script');
+			script.innerHTML = `let textbar = document.getElementById("chat-input");let send = document.getElementById("chat-send");function sendMsg(text){send.click();textbar.value=text;setTimeout(()=>{send.click()},500)};miniuser=true;let ships = Array.from(document.getElementsByClassName("sy-id")); ships.forEach((ship)=>{;if(ship.innerText === '{${shipid}}'){ship.click()}});`
+			mini.addEventListener('load', function()
+			{
+				mini.document.body.appendChild(script)
+			});
+			miniusers.push(mini);
+		}
 
 		function controlMini(msg)
 		{
@@ -347,6 +362,47 @@
 				})
 			}, 1000)
 		})
+        document.getElementById("kick").addEventListener("click", function()
+		{
+			teamAct('toggle_ui');
+            teamAct('toggle_ui');
+			let btns = Array.from(document.getElementsByTagName("button"))
+			btns.filter(b => b.innerText === "Crew Control & Log")[0].click()
+			btns.filter(b => b.innerText === "↻ Refresh List + Clear Filters")[0].click()
+			let val = document.getElementById("kickVal").value
+			setTimeout(() =>
+			{
+				let roleselec = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children).filter(s=>s.firstChild.firstChild!==null&&s.lastChild.children.length>1&&s.lastChild.firstChild.value==val)
+                console.log(roleselec)
+				let totalroles = roleselec.length
+				let done = 0
+				let bar = document.createElement("div")
+				bar.style.backgroundColor = "grey"
+				bar.innerHTML = `<div id="countbar" style="position:absolute;"></div><div id="percbar" style="background-color:blue;height:30px;"></div>`
+				bar.style = `background-color: grey;width: 300px;position: absolute;left: 50%;top: 100px;height: 30px;transform: translate(-50%, -50%);display: flex;align-items: center;justify-content: center;`
+				document.body.append(bar)
+				let percbar = document.getElementById("percbar")
+				let countbar = document.getElementById("countbar")
+				let i = 0;
+				percbar.style.width = 0
+				roleselec.forEach((selec) =>
+				{
+                    selec.lastChild.lastChild.firstChild.click()
+					i++;
+					setTimeout(() =>
+					{
+						selec
+						done += 1
+						percbar.style.width = `${done/totalroles*300}px`
+						countbar.innerText = `${done}/${totalroles}`
+						if (done / totalroles == 1)
+						{
+							bar.remove()
+						}
+					}, i * 100)
+				})
+			}, 1000)
+		})
 		let EPICmotdId;
 		EPICmotd.addEventListener("click", function()
 		{
@@ -398,6 +454,8 @@
         function URLmodifier(msg){
             if (/Joined ship/gi.test(msg.innerText))
 			{
+                teamAct('toggle_ui');
+                teamAct('toggle_ui');
 				shipid = msg.childNodes[0].childNodes[0].innerText;
 				shipid = shipid.substring(shipid.indexOf("{") + 1, shipid.lastIndexOf("}"));
                 return;
