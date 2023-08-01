@@ -23,9 +23,7 @@
         color:indigo; 
     } 
 } 
-#userMenu button{ 
-    width:65px; 
-} 
+
 #shipPlayersMenu span{ 
     border-radius:10px;
     padding:2px;
@@ -76,7 +74,25 @@
     align-items: center
 }
 
-.usermenu-section{
+.usermenu-normal-section{
     border: 1px solid white;
     padding:10px;
+}
+.usermenu-cap-section{
+    border: 1px solid white;
+    padding:10px;
+}
+.usermenu-cap-section button{
+    width:65px; 
+}
+#userMenu{
+    padding: 10px; 
+    left: 20px; 
+    bottom: 100px; 
+    position: fixed; 
+    z-index: 100;
+    
+}
+.link-wrapper{
+    position: relative;
 }
