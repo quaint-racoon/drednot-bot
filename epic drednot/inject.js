@@ -83,6 +83,9 @@
             }
         })
     }
+	function toggleUI(ui){
+        ui.style.display = ui.style.display === 'none' ? '' : 'none';
+    }
 	window.addEventListener('load', () =>
 	{
         let mapBtn = document.getElementById("map_button")
