@@ -14,7 +14,7 @@
 	userMenu.id = "userMenu"
 	userMenu.classList = "darker"
     userMenu.style="display:none;"
-	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <section class="usermenu-cap-section" id="capCommands"><h3>captain commands</h3><button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);float:right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(255, 255, 136); float: right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-normal-section" id="normalCommands"><h3>normal commands</h3><button class="btn-small" id="chat embeds">chat embeds</button><button class="btn-small" id="motd embeds">motd embeds</button></section>'
+	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <section class="usermenu-cap-section" id="capCommands" style="display:none;"><h3>captain commands</h3><button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);float:right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(255, 255, 136); float: right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-normal-section" id="normalCommands"><h3>normal commands</h3><button class="btn-small" id="chat embeds">chat embeds</button><button class="btn-small" id="motd embeds">motd embeds</button></section>'
 	let userMenuBtn = document.createElement("button")
 	userMenuBtn.classList = "btn-blue btn-small"
 	userMenuBtn.innerText = "Epic menu"
@@ -30,6 +30,43 @@
 	let shipPlayersMenu = document.createElement("div")
 	shipPlayersMenu.style = "width:100%;position:absolute;"
 	shipPlayersMenu.id = "shipPlayersMenu"
+    
+    function getUser(text){
+        let output;
+        let data = accountdata()
+        if(text.startsWith("[")){
+            output = text.substring(
+                text.indexOf("] ") + 2,   
+                text.indexOf(":")    
+            );
+        }else{
+            output = text.substring(
+                0,   
+                text.indexOf(":")    
+                );
+        }
+        fetch("https://drednots-database.quaint0racoon.repl.co/getuser", {
+            method: "POST", 
+            headers: {
+                "Content-Type": "application/json",
+    },
+  body: JSON.stringify({name:ouput,usercode:data.usercode,acc:data.acc})
+}).then((data)=>{
+            console.log(data)
+            if(data.error) alert(data.error)
+            if(data.verifycode){
+                let code = prompt(data.verifycode)
+                db.set("code",code)
+                alert("code set up please retry to send another request now")
+            }
+            if(data.info){
+                let div = document.createElement("div")
+                div.class="popup"
+                div.innerText=data.info
+            }
+        })
+        
+    }
     
     function saveShip(){
         teamAct('toggle_ui');
@@ -53,7 +90,9 @@
         }
     }
     const db = new DB();
-    
+    function isCap(){
+        return document.getElementById("team_manager_button").style.display!="none"
+    }
     function accountdata(){
         return {usercode:db.get("code"),acc:(Array.from(document.getElementsByClassName("user"))[0].innerText)}
     }
@@ -472,7 +511,7 @@ observer.observe(document, {
 		const motdTextObserver = new MutationObserver(async (list) =>
 		{
 			motdTextObserver.disconnect();
-			await URLmodifier(motdText)
+			if(settings.MotdEmbeds)await URLmodifier(motdText)
 			motdTextObserver.observe(motdText,
 			{
 				childList: true
@@ -483,10 +522,17 @@ observer.observe(document, {
 		const chatObserver = new MutationObserver((list) =>
 		{
 			let msg = chat.lastChild
-            console.log(msg)
-            URLmodifier(msg)
+             if (!/Joined ship/gi.test(msg.innerText)){
+                  if(!/^\[SYSTEM\] (.+)$/mi.test(msg.innerText)){
+                      msg.addEventListener("dblclick",()=>{
+                          getUser(msg.innerText)
+                      })
+                  }
+             }
+            if(settings.chatEmbeds) URLmodifier(msg)
 
 		})
+        
         
         function URLmodifier(msg){
             if (/Joined ship/gi.test(msg.innerText))
@@ -495,9 +541,14 @@ observer.observe(document, {
                 teamAct('toggle_ui');
 				shipid = msg.childNodes[0].childNodes[0].innerText;
 				shipid = shipid.substring(shipid.indexOf("{") + 1, shipid.lastIndexOf("}"));
+                
+                console.log(isCap())
+                    document.getElementById("capCommands").style.display = isCap()? "":"none"
+                    
                 return;
 			}
             if(/^\[SYSTEM\] (.+)$/mi.test(msg.innerText))return
+            
             
 					let words = msg.innerText.split(/(\r\n|\r|\n| )/g)
 					let links = words.filter(r => linkstarters.test(r))
@@ -510,7 +561,7 @@ observer.observe(document, {
 						{
 							let div = document.createElement("div")
 							div.classList = "embed"
-							div.innerHTML = `<image src="${link}" style="display:block;"></image>`
+							div.innerHTML = `<div class="fixed-wrapper"><image src="${link}" style="display:block;"></image></div>`
 							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
                             chat.scrollY = chat.height
 						}
@@ -526,7 +577,7 @@ observer.observe(document, {
 									let image = metas.filter(a => a.attributes[0].value === "og:image")[0]
 									let div = document.createElement("div")
                                     div.classList = "embed"
-									div.innerHTML = `<img src="${image.content}" width="150px" height="150px" style="padding:3px;"><div style="display:flex;flex-direction: column;align-items: center;justify-content: space-evenly;font-size:18px;"><strong>${title.content.slice(0, -13)}</strong><div style="display:flex;justify-content: center;align-items: center;width:100%;"><span>open in:</span><a href="${link}" target="_blank"><button style="margin:5px;" class="btn-small btn-orange">new tab</button></a><a href="${link}"><button class="btn-red btn-small">this tab</button></a></div></div>`
+									div.innerHTML = `<div class="fixed-wrapper"><img src="${image.content}" width="150px" height="150px" style="padding:3px;"><div style="display:flex;flex-direction: column;align-items: center;justify-content: space-evenly;font-size:18px;"><strong>${title.content.slice(0, -13)}</strong><div style="display:flex;justify-content: center;align-items: center;width:100%;"><span>open in:</span><a href="${link}" target="_blank"><button style="margin:5px;" class="btn-small btn-orange">new tab</button></a><a href="${link}"><button class="btn-red btn-small">this tab</button></a></div></div></div>`
 							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
 								})
 						}
@@ -534,7 +585,7 @@ observer.observe(document, {
 						{
 							let div = document.createElement("div")
 							div.classList = "embed video"
-                            div.innerHTML = `<iframe src="${link.replace("watch?v=","embed/")}" style=" aspect-ratio: 16/9; height: 150px; " allowfullscreen></iframe>`
+                            div.innerHTML = `<div class="fixed-wrapper"><iframe src="${link.replace("watch?v=","embed/")}" style=" aspect-ratio: 16/9; height: 150px; " allowfullscreen></iframe></div>`
 							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
                             
 						}
@@ -553,14 +604,15 @@ observer.observe(document, {
 		}
         
         function startMotd(){
-            motdTextObserver.observe(motdText,{childList: true,});
+            
             MOTDembeds.classList.toggle("btn-green")
         }
         function startChat(){
-            chatObserver.observe(chat,{characterData: false,attributes: false,childList: true,subtree: false});
+            
             chatembeds.classList.toggle("btn-green")
         }
-        
+            motdTextObserver.observe(motdText,{childList: true,});
+        chatObserver.observe(chat,{characterData: false,attributes: false,childList: true,subtree: false});
         if(settings.chatEmbeds) startChat()
         if(settings.MotdEmbeds) startMotd()
         
