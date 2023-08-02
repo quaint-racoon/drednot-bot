@@ -53,16 +53,12 @@
     word-wrap: break-word;
 }
 .link-wrapper:hover > .embed{    
-    display:flex;
+    display:block;
     
 } 
 .embed{
     display:none;
-    justify-content: center;
     position: absolute;
-    background: rgba(25,35,45,.9);
-    border: 1px solid black;
-    box-shadow: black 0px 0px 20px;
 }
 #avatarPFP{
     margin-right: 15px;
@@ -95,4 +91,20 @@
 }
 .link-wrapper{
     position: relative;
+}
+.fixed-wrapper{
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    background: rgba(25,35,45,.9);
+    border: 1px solid black;
+    box-shadow: black 0px 0px 20px;
+}
+.popup{
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    background: rgba(25,35,45,.9);
+    border: 1px solid black;
+    box-shadow: black 0px 0px 20px;
 }
