@@ -277,26 +277,7 @@ observer.observe(document, {
         
         
         
-		function sendDiscord(msg)
-		{
-			const request = new XMLHttpRequest();
-			request.open("POST", "https://discord.com/api/webhooks/1059542540510048336/CTnXtQwbj8bYbXuRuKK0NBfaf2vNMUb3nJkkvY7SFHJopVLNFKNO7O-1LkGDZa5DQtxu");
-			let avatarUrl = "https://media.discordapp.net/attachments/845217484860030999/1059543864119152693/266495196622094336_7eLhT8SQxirx.gif?width=395&height=395"
-			request.setRequestHeader('Content-type', 'application/json');
-			const params = {
-				"username": "drednot bot feed",
-				"avatar_url": avatarUrl,
-				"content": null,
-				"embeds": [
-				{
-					"title": `{${shipid}}`,
-					"description": msg,
-					"color": 8459284,
-				}],
-			};
-			request.send(JSON.stringify(params));
-		}
-
+		
 		function sendMsg(text)
 		{
 			send.click();
