@@ -30,5 +30,9 @@
               
         "matches": ["https://*.drednot.io/*"]
       }
-  ]
+  ],
+"browser_specific_settings": {
+  "gecko": {
+    "id": "epic drednot",
+  }
 }
