@@ -128,8 +128,8 @@
 	window.addEventListener('load', () =>
 	{
 
-        let mapBtn = document.getElementById("map_button")
-        mapBtn.parentElement.insertBefore(quick_save, mapBtn);
+        let exitBtn = document.getElementById("exit_button")
+        exitBtn.parentElement.insertBefore(quick_save, exitBtn);
         
 		let oldMotdText = document.getElementById("motd-text")
 		let motdText = document.createElement("div")
