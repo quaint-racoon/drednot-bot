@@ -395,7 +395,7 @@ observer.observe(document, {
 				let done = 0
 				let bar = document.createElement("div")
 				bar.style.backgroundColor = "grey"
-				bar.innerHTML = `<div id="countbar" style="position:absolute;"></div><div id="percbar" style="background-color:blue;height:30px;"></div>`
+				bar.innerHTML = `<div class="countbar" style="position:absolute;"></div><div class="percbar" style="background-color:blue;height:30px;"></div>`
 				bar.style = `background-color: grey;width: 300px;position: absolute;left: 50%;top: 100px;height: 30px;transform: translate(-50%, -50%);display: flex;align-items: center;justify-content: center;`
 				document.body.append(bar)
 				let percbar = bar.getElementsByClassName("percbar")[0]
