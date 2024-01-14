@@ -398,8 +398,8 @@ observer.observe(document, {
 				bar.innerHTML = `<div id="countbar" style="position:absolute;"></div><div id="percbar" style="background-color:blue;height:30px;"></div>`
 				bar.style = `background-color: grey;width: 300px;position: absolute;left: 50%;top: 100px;height: 30px;transform: translate(-50%, -50%);display: flex;align-items: center;justify-content: center;`
 				document.body.append(bar)
-				let percbar = bar.getElementById("percbar")
-				let countbar = bar.getElementById("countbar")
+				let percbar = bar.getElementsByClassName("percbar")[0]
+				let countbar = bar.getElementsByClassName("countbar")[0]
 				let i = 0;
 				percbar.style.width = 0
 				roleselec.forEach((selec) =>
