@@ -522,10 +522,10 @@ observer.observe(document, {
                 teamAct('toggle_ui');
 				shipid = msg.childNodes[0].childNodes[0].innerText;
 				shipid = shipid.substring(shipid.indexOf("{") + 1, shipid.lastIndexOf("}"));
+        
                 
-                console.log(isCap())
                     document.getElementById("capCommands").style.display = isCap()? "":"none"
-                    
+                    document.getElementById("quick_save").style.display = isCap()? "":"none"
                 return;
 			}
             if(/^\[SYSTEM\] (.+)$/mi.test(msg.innerText))return
