@@ -285,7 +285,7 @@ observer.observe(document, {
 			setTimeout(() =>
 			{
 				send.click()
-			}, 500)
+			}, 1000)
 			miniusers.forEach((mini) =>
 			{
 				let script = mini.document.createElement('script');
