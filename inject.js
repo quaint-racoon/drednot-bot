@@ -127,6 +127,25 @@
     }
 	window.addEventListener('load', () =>
 	{
+		   const observer = new MutationObserver(mutations => {
+  if (mutations.some(mutation => {
+    return Array.from(mutation.addedNodes).some(node => node.id=="shipyard")
+  })) {
+    setTimeout(() => { 
+             let sectionmenu = document.getElementById("shipyard").firstChild
+            sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
+        document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
+    }, 0)
+    observer.disconnect()
+  }
+})
+
+observer.observe(document, {
+  attributes: false,
+  childList: true,
+  characterData: false,
+  subtree: true
+})
 
         let exitBtn = document.getElementById("exit_button")
         exitBtn.parentElement.insertBefore(quick_save, exitBtn);
@@ -146,25 +165,7 @@
             
         
         
-        const observer = new MutationObserver(mutations => {
-  if (mutations.some(mutation => {
-    return Array.from(mutation.addedNodes).some(node => node.id=="shipyard")
-  })) {
-    setTimeout(() => { 
-             let sectionmenu = document.getElementById("shipyard").firstChild
-            sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
-        document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
-    }, 0)
-    observer.disconnect()
-  }
-})
-
-observer.observe(document, {
-  attributes: false,
-  childList: true,
-  characterData: false,
-  subtree: true
-})
+     
         
         
         
