@@ -126,10 +126,10 @@
         ui.style.display = ui.style.display === 'none' ? '' : 'none';
     }
 	function loginloop(){
-			console.log("restarting loop!")
+			
 		    let sectionmenu = document.getElementById("shipyard").firstChild
 		if(Array.from(sectionmenu.children).length<4)return setTimeout(loginloop(),1000)
-			console.log("loop succeceded!")
+			
             sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
         document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
 		}
