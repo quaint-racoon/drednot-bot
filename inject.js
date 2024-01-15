@@ -125,16 +125,18 @@
 	function toggleUI(ui){
         ui.style.display = ui.style.display === 'none' ? '' : 'none';
     }
-	window.addEventListener('load', () =>
-	{
-		function loginloop(){
+	function loginloop(){
+			console.log("restarting loop!")
 		    let sectionmenu = document.getElementById("shipyard").firstChild
-		if(secetionmenu.firstChild==null)return setTimeout(loginloop(),1000)
-			
+		if(Array.from(sectionmenu.children).length<4)return setTimeout(loginloop(),1000)
+			console.log("loop succeceded!")
             sectionmenu.insertBefore(loginsection,Array.from(sectionmenu.children)[2])
         document.getElementById("discordloginbtn").addEventListener("click",()=>{loginToDrednotsDB()})
 		}
-  
+	window.addEventListener('load', () =>
+	{
+		
+		loginloop()
 
         let exitBtn = document.getElementById("exit_button")
         exitBtn.parentElement.insertBefore(quick_save, exitBtn);
@@ -422,7 +424,7 @@
 			setTimeout(() =>
 			{
 				let roleselec = Array.from(document.getElementById("team_players_inner").firstChild.lastChild.children).filter(s=>s.firstChild.firstChild!==null&&s.lastChild.children.length>1&&s.lastChild.firstChild.value==val)
-                console.log(roleselec)
+                
 				let totalroles = roleselec.length
 				let done = 0
 				let bar = document.createElement("div")
