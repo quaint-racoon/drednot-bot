@@ -57,8 +57,16 @@
     
 } 
 .embed{
+    position : absolute;
     display:none;
-    position: absolute;
+    max-width: 400px;
+    justify-content: center;
+    background: rgba(25,35,45,.9);
+    border: 1px solid black;
+    box-shadow: black 0px 0px 20px;
+}
+.embed>img{
+    max-width: 400px;
 }
 #avatarPFP{
     margin-right: 15px;
@@ -74,6 +82,13 @@
     border: 1px solid white;
     padding:10px;
 }
+.usermenu-bot-section{
+    border: 1px solid white;
+    padding:10px;
+}
+.usermenu-bot-section button{
+    width:60px
+}
 .usermenu-cap-section{
     border: 1px solid white;
     padding:10px;
@@ -84,22 +99,16 @@
 #userMenu{
     padding: 10px; 
     left: 20px; 
-    bottom: 100px; 
+    bottom: 55px;
     position: fixed; 
     z-index: 100;
     
 }
 .link-wrapper{
-    position: relative;
+    position : relative;
+    
 }
-.fixed-wrapper{
-    display: flex;
-    position: fixed;
-    justify-content: center;
-    background: rgba(25,35,45,.9);
-    border: 1px solid black;
-    box-shadow: black 0px 0px 20px;
-}
+
 .popup{
     display: flex;
     position: fixed;
