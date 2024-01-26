@@ -14,7 +14,7 @@
 	userMenu.id = "userMenu"
 	userMenu.classList = "darker"
     userMenu.style="display:none;"
-	userMenu.innerHTML = '<h2 id="EPICheader">epic menu!</h2> <section class="usermenu-cap-section" id="capCommands" style="display:none;"><h3>captain commands</h3><button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);float:right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(255, 255, 136); float: right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-normal-section" id="normalCommands"><h3>normal commands</h3><button class="btn-small" id="chat embeds">chat embeds</button><button class="btn-small" id="motd embeds">motd embeds</button></section>'
+	userMenu.innerHTML = '<div id="userMenu" class="darker"><h2 id="EPICheader">epic menu!</h2> <section class="usermenu-cap-section" id="capCommands" style=""><h3>captain commands</h3><button class="btn-small" id="promote">promote</button><select id="promoteVal" style="background: rgb(136, 255, 255);float:right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="3" style="background: rgb(136, 255, 255);">Captain</option><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button class="btn-small" id="kick">kick</button><select id="kickVal" style="background: rgb(255, 255, 136); float: right;" onchange="Array.from(this.options).forEach((opt)=>{if(opt.value==this.value)this.style.background=opt.style.background})"><option value="1" style="background: rgb(255, 255, 136);">Crew</option><option value="0" style="background: rgb(204, 204, 204);">Guest</option></select><br><button id="EPICmotd" class="btn-small">motd</button><input type="text" id="EPICmotdText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-normal-section" id="normalCommands"><h3>normal commands</h3><button class="btn-small btn-green" id="chat embeds">chat embeds</button><button class="btn-small btn-green" id="motd embeds">motd embeds</button><br><button id="EPICantiafk" class="btn-small">antiAFK</button><input type="text" id="EPICantiafkText" value="message here" style="font-size:14px;maxlength:250px"></section><br><section class="usermenu-bot-section" id="botCommands"><h3>bot commands</h3><button class="btn-small" id="bot join">join bot</button><input type="number" id="bot join num" style="font-size:14px;maxlength:250px"><br><button class="btn-small" id="bot leave">leave bot</button><input type="number" id="bot leave num" style="font-size:14px;maxlength:250px"></section></div>'
 	let userMenuBtn = document.createElement("button")
 	userMenuBtn.classList = "btn-blue btn-small"
 	userMenuBtn.innerText = "Epic menu"
@@ -169,6 +169,10 @@
 		let chat = document.getElementById("chat-content");
 		let textbar = document.getElementById("chat-input");
 		let send = document.getElementById("chat-send");
+		let botjoin = document.getElementById("bot join")
+		let botjoinnum = document.getElementById("bot join num")
+		let botleave = document.getElementById("bot leave")
+		let botleavenum = document.getElementById("bot leave num")
 		let antiAfk = document.getElementById("EPICantiafk")
 		let antiAfkText = document.getElementById("EPICantiafkText")
 		let EPICmotd = document.getElementById("EPICmotd")
@@ -188,6 +192,18 @@
 			`%&!@#$\n${EPICmotdText.value}\n&!@#$%`,
 			`#^&%*!\n${EPICmotdText.value}\n@%&*$`
 		];
+		botjoin.addEventListener("click", () =>
+		{
+			if(botjoin.value==null)return console.log("enter a valid bot ammount")
+			joinmini(botjoinnum.value)
+			console.log(botjoinnum.value)
+
+			
+		});
+		botleave.addEventListener("click", () =>
+		{
+			controlMini("!bot leave "+botleavenum.value)
+		});
 		EPICmotdText.addEventListener("change", () =>
 		{
 			words = [
@@ -530,11 +546,11 @@
 					links.forEach((link) =>
 					{
 						
-                        if (link.startsWith("https://media.discordapp.net/attachments/" || "media.discordapp.net/attachments"))
+                        if (msg.innerText.match(/\.(jpeg|jpg|gif|png)$/) != null)
 						{
 							let div = document.createElement("div")
 							div.classList = "embed"
-							div.innerHTML = `<div class="fixed-wrapper"><image src="${link}" style="display:block;"></image></div>`
+							div.innerHTML = `<image src="${link}" style="display:block;"></image>`
 							Array.from(document.getElementsByClassName("link-wrapper")).filter(l=>l.children.length<2).filter(l=>l.firstChild.href==link)[0].appendChild(div)
                             chat.scrollY = chat.height
 						}
